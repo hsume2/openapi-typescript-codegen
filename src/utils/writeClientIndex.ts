@@ -33,6 +33,11 @@ export async function writeClientIndex(
     exportModels: boolean,
     exportSchemas: boolean
 ): Promise<void> {
+    const modelsRelativePath = relative(outputPath, modelsPath);
+    const schemasRelativePath = relative(outputPath, schemasPath);
+    const servicesRelativePath = relative(outputPath, servicesPath);
+    const coreRelativePath = relative(outputPath, corePath);
+
     await writeFile(
         resolve(outputPath, 'index.ts'),
         templates.index({
@@ -45,10 +50,10 @@ export async function writeClientIndex(
             version: client.version,
             models: sortModelsByName(client.models),
             services: sortServicesByName(client.services),
-            modelsPath: relative(outputPath, modelsPath),
-            schemasPath: relative(outputPath, schemasPath),
-            servicesPath: relative(outputPath, servicesPath),
-            corePath: relative(outputPath, corePath),
+            modelsPath: modelsRelativePath.startsWith('../') ? modelsRelativePath : `./${modelsRelativePath}`,
+            schemasPath: schemasRelativePath.startsWith('../') ? schemasRelativePath : `./${schemasRelativePath}`,
+            servicesPath: servicesRelativePath.startsWith('../') ? servicesRelativePath : `./${servicesRelativePath}`,
+            corePath: coreRelativePath.startsWith('../') ? coreRelativePath : `./${coreRelativePath}`,
         })
     );
 }
