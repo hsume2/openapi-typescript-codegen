@@ -5,6 +5,7 @@ import { HttpClient } from '../HttpClient';
 import { writeFile } from './fileSystem';
 import { format } from './format';
 import { Templates } from './registerHandlebarTemplates';
+import { sortModelsByName } from './sortModelsByName';
 
 /**
  * Generate Models using the Handlebar template and write to disk.
@@ -24,4 +25,17 @@ export async function writeClientModels(models: Model[], templates: Templates, o
         });
         await writeFile(file, format(templateResult));
     }
+    const indexFile = resolve(outputPath, 'index.ts');
+    await writeFile(
+        indexFile,
+        templates.index({
+            exportCore: false,
+            exportServices: false,
+            exportModels: true,
+            exportSchemas: false,
+            useUnionTypes,
+            models: sortModelsByName(models),
+            modelsPath: '.',
+        })
+    );
 }

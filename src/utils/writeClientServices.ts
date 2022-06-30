@@ -1,10 +1,11 @@
-import { resolve } from 'path';
+import { resolve, relative } from 'path';
 
 import type { Service } from '../client/interfaces/Service';
 import { HttpClient } from '../HttpClient';
 import { writeFile } from './fileSystem';
 import { format } from './format';
 import { Templates } from './registerHandlebarTemplates';
+import { sortServicesByName } from './sortServicesByName';
 
 const VERSION_TEMPLATE_STRING = 'OpenAPI.VERSION';
 
@@ -39,4 +40,17 @@ export async function writeClientServices(
         });
         await writeFile(file, format(templateResult));
     }
+    const indexFile = resolve(outputPath, 'index.ts');
+    await writeFile(
+        indexFile,
+        templates.index({
+            exportCore: false,
+            exportServices: true,
+            exportModels: false,
+            exportSchemas: false,
+            useUnionTypes,
+            services: sortServicesByName(services),
+            servicesPath: '.',
+        })
+    );
 }
