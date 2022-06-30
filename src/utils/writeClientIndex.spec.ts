@@ -30,7 +30,7 @@ describe('writeClientIndex', () => {
             },
         };
 
-        await writeClientIndex(client, templates, '/', true, true, true, true, true);
+        await writeClientIndex(client, templates, '/', '/core', '/models', '/schemas', '/services', true, true, true, true, true);
 
         expect(writeFile).toBeCalledWith('/index.ts', 'index');
     });

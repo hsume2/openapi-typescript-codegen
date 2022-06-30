@@ -2,7 +2,7 @@
 
 {{#if imports}}
 {{#each imports}}
-import type { {{{this}}} } from '../models/{{{this}}}';
+import type { {{{this}}} } from '{{{@root.modelsPath}}}/{{{this}}}';
 {{/each}}
 {{/if}}
 import { BaseAPI, globalImportUrl, AxiosPromise } from '../core/request';

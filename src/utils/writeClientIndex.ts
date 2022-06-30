@@ -1,4 +1,4 @@
-import { resolve } from 'path';
+import { resolve, relative } from 'path';
 
 import type { Client } from '../client/interfaces/Client';
 import { writeFile } from './fileSystem';
@@ -23,6 +23,10 @@ export async function writeClientIndex(
     client: Client,
     templates: Templates,
     outputPath: string,
+    corePath: string,
+    modelsPath: string,
+    schemasPath: string,
+    servicesPath: string,
     useUnionTypes: boolean,
     exportCore: boolean,
     exportServices: boolean,
@@ -41,6 +45,10 @@ export async function writeClientIndex(
             version: client.version,
             models: sortModelsByName(client.models),
             services: sortServicesByName(client.services),
+            modelsPath: relative(outputPath, modelsPath),
+            schemasPath: relative(outputPath, schemasPath),
+            servicesPath: relative(outputPath, servicesPath),
+            corePath: relative(outputPath, corePath),
         })
     );
 }
