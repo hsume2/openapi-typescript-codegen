@@ -13,6 +13,10 @@ const params = program
     .requiredOption('-i, --input <value>', 'OpenAPI specification, can be a path, url or string content (required)')
     .requiredOption('-o, --output <value>', 'Output directory (required)')
     .option('-c, --client <value>', 'HTTP client to generate [fetch, xhr, node, axios]', 'fetch')
+    .option('--outputCore <value>', 'The relative location of the core output directory')
+    .option('--outputServices <value>', 'The relative location of the services output directory')
+    .option('--outputModels <value>', 'The relative location of the models output directory')
+    .option('--outputSchemas <value>', 'The relative location of the core output directory')
     .option('--useOptions', 'Use options instead of arguments')
     .option('--useUnionTypes', 'Use union types instead of enums')
     .option('--exportCore <value>', 'Write core files to disk', true)
@@ -29,6 +33,10 @@ if (OpenAPI) {
     OpenAPI.generate({
         input: params.input,
         output: params.output,
+        outputCore: params.outputCore,
+        outputServices: params.outputServices,
+        outputModels: params.outputModels,
+        outputSchemas: params.outputSchemas,
         httpClient: params.client,
         useOptions: params.useOptions,
         useUnionTypes: params.useUnionTypes,
