@@ -1,3 +1,4 @@
+import { resolve } from 'path';
 import { HttpClient } from './HttpClient';
 import { parse as parseV2 } from './openApi/v2';
 import { parse as parseV3 } from './openApi/v3';
@@ -13,6 +14,10 @@ export { HttpClient } from './HttpClient';
 export type Options = {
     input: string | Record<string, any>;
     output: string;
+    outputCore?: string;
+    outputServices?: string;
+    outputModels?: string;
+    outputSchemas?: string;
     httpClient?: HttpClient;
     useOptions?: boolean;
     useUnionTypes?: boolean;
@@ -30,6 +35,10 @@ export type Options = {
  * service layer, etc.
  * @param input The relative location of the OpenAPI spec
  * @param output The relative location of the output directory
+ * @param outputCore The relative location of the core output directory
+ * @param outputModels The relative location of the models output directory
+ * @param outputSchemas The relative location of the schemas output directory
+ * @param outputServices The relative location of the services output directory
  * @param httpClient The selected httpClient (fetch or XHR)
  * @param useOptions Use options or arguments functions
  * @param useUnionTypes Use union types instead of enums
@@ -43,6 +52,10 @@ export type Options = {
 export async function generate({
     input,
     output,
+    outputCore = resolve(output, 'core'),
+    outputModels = resolve(output, 'models'),
+    outputServices = resolve(output, 'services'),
+    outputSchemas = resolve(output, 'schemas'),
     httpClient = HttpClient.FETCH,
     useOptions = false,
     useUnionTypes = false,
@@ -66,7 +79,23 @@ export async function generate({
             const client = parseV2(openApi);
             const clientFinal = postProcessClient(client);
             if (!write) break;
-            await writeClient(clientFinal, templates, output, httpClient, useOptions, useUnionTypes, exportCore, exportServices, exportModels, exportSchemas, request);
+            await writeClient(
+                clientFinal,
+                templates,
+                output,
+                outputCore,
+                outputModels,
+                outputSchemas,
+                outputServices,
+                httpClient,
+                useOptions,
+                useUnionTypes,
+                exportCore,
+                exportServices,
+                exportModels,
+                exportSchemas,
+                request
+            );
             break;
         }
 
@@ -74,7 +103,23 @@ export async function generate({
             const client = parseV3(openApi);
             const clientFinal = postProcessClient(client);
             if (!write) break;
-            await writeClient(clientFinal, templates, output, httpClient, useOptions, useUnionTypes, exportCore, exportServices, exportModels, exportSchemas, request);
+            await writeClient(
+                clientFinal,
+                templates,
+                output,
+                outputCore,
+                outputModels,
+                outputSchemas,
+                outputServices,
+                httpClient,
+                useOptions,
+                useUnionTypes,
+                exportCore,
+                exportServices,
+                exportModels,
+                exportSchemas,
+                request
+            );
             break;
         }
     }

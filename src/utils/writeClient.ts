@@ -16,6 +16,10 @@ import { writeClientServices } from './writeClientServices';
  * @param client Client object with all the models, services, etc.
  * @param templates Templates wrapper with all loaded Handlebars templates
  * @param output The relative location of the output directory
+ * @param outputCore The relative location of the core output directory
+ * @param outputModels The relative location of the models output directory
+ * @param outputSchemas The relative location of the schemas output directory
+ * @param outputServices The relative location of the services output directory
  * @param httpClient The selected httpClient (fetch, xhr or node)
  * @param useOptions Use options or arguments functions
  * @param useUnionTypes Use union types instead of enums
@@ -29,6 +33,10 @@ export async function writeClient(
     client: Client,
     templates: Templates,
     output: string,
+    outputCore: string,
+    outputModels: string,
+    outputSchemas: string,
+    outputServices: string,
     httpClient: HttpClient,
     useOptions: boolean,
     useUnionTypes: boolean,
@@ -39,10 +47,10 @@ export async function writeClient(
     request?: string
 ): Promise<void> {
     const outputPath = resolve(process.cwd(), output);
-    const outputPathCore = resolve(outputPath, 'core');
-    const outputPathModels = resolve(outputPath, 'models');
-    const outputPathSchemas = resolve(outputPath, 'schemas');
-    const outputPathServices = resolve(outputPath, 'services');
+    const outputPathCore = resolve(process.cwd(), outputCore);
+    const outputPathModels = resolve(process.cwd(), outputModels);
+    const outputPathSchemas = resolve(process.cwd(), outputSchemas);
+    const outputPathServices = resolve(process.cwd(), outputServices);
 
     if (!isSubDirectory(process.cwd(), output)) {
         throw new Error(`Output folder is not a subdirectory of the current working directory`);
@@ -57,7 +65,7 @@ export async function writeClient(
     if (exportServices) {
         await rmdir(outputPathServices);
         await mkdir(outputPathServices);
-        await writeClientServices(client.services, templates, outputPathServices, httpClient, useUnionTypes, useOptions);
+        await writeClientServices(client.services, templates, outputPathServices, outputPathModels, httpClient, useUnionTypes, useOptions);
     }
 
     if (exportSchemas) {
@@ -74,6 +82,19 @@ export async function writeClient(
 
     if (exportCore || exportServices || exportSchemas || exportModels) {
         await mkdir(outputPath);
-        await writeClientIndex(client, templates, outputPath, useUnionTypes, exportCore, exportServices, exportModels, exportSchemas);
+        await writeClientIndex(
+            client,
+            templates,
+            outputPath,
+            outputPathCore,
+            outputPathModels,
+            outputPathSchemas,
+            outputPathServices,
+            useUnionTypes,
+            exportCore,
+            exportServices,
+            exportModels,
+            exportSchemas
+        );
     }
 }

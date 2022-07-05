@@ -1,10 +1,11 @@
-import { resolve } from 'path';
+import { resolve, relative } from 'path';
 
 import type { Service } from '../client/interfaces/Service';
 import { HttpClient } from '../HttpClient';
 import { writeFile } from './fileSystem';
 import { format } from './format';
 import { Templates } from './registerHandlebarTemplates';
+import { sortServicesByName } from './sortServicesByName';
 
 const VERSION_TEMPLATE_STRING = 'OpenAPI.VERSION';
 
@@ -17,12 +18,21 @@ const VERSION_TEMPLATE_STRING = 'OpenAPI.VERSION';
  * @param useUnionTypes Use union types instead of enums
  * @param useOptions Use options or arguments functions
  */
-export async function writeClientServices(services: Service[], templates: Templates, outputPath: string, httpClient: HttpClient, useUnionTypes: boolean, useOptions: boolean): Promise<void> {
+export async function writeClientServices(
+    services: Service[],
+    templates: Templates,
+    outputPath: string,
+    modelsOutputPath: string,
+    httpClient: HttpClient,
+    useUnionTypes: boolean,
+    useOptions: boolean
+): Promise<void> {
     for (const service of services) {
         const file = resolve(outputPath, `${service.name}.ts`);
         const useVersion = service.operations.some(operation => operation.path.includes(VERSION_TEMPLATE_STRING));
         const templateResult = templates.exports.service({
             ...service,
+            modelsPath: relative(outputPath, modelsOutputPath),
             httpClient,
             useUnionTypes,
             useVersion,
@@ -30,4 +40,17 @@ export async function writeClientServices(services: Service[], templates: Templa
         });
         await writeFile(file, format(templateResult));
     }
+    const indexFile = resolve(outputPath, 'index.ts');
+    await writeFile(
+        indexFile,
+        templates.index({
+            exportCore: false,
+            exportServices: true,
+            exportModels: false,
+            exportSchemas: false,
+            useUnionTypes,
+            services: sortServicesByName(services),
+            servicesPath: '.',
+        })
+    );
 }

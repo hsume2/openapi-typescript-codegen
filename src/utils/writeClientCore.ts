@@ -25,6 +25,17 @@ export async function writeClientCore(client: Client, templates: Templates, outp
     await writeFile(resolve(outputPath, 'ApiRequestOptions.ts'), templates.core.apiRequestOptions({}));
     await writeFile(resolve(outputPath, 'ApiResult.ts'), templates.core.apiResult({}));
     await writeFile(resolve(outputPath, 'request.ts'), templates.core.request(context));
+    const indexFile = resolve(outputPath, 'index.ts');
+    await writeFile(
+        indexFile,
+        templates.index({
+            exportCore: true,
+            exportServices: false,
+            exportModels: false,
+            exportSchemas: false,
+            corePath: '.',
+        })
+    );
 
     if (request) {
         const requestFile = resolve(process.cwd(), request);

@@ -47,5 +47,6 @@ describe('writeClientModels', () => {
         await writeClientModels(models, templates, '/', HttpClient.FETCH, false);
 
         expect(writeFile).toBeCalledWith('/MyModel.ts', 'model');
+        expect(writeFile).toBeCalledWith('/index.ts', 'index');
     });
 });

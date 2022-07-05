@@ -1,4 +1,4 @@
-import { resolve } from 'path';
+import { resolve, relative } from 'path';
 
 import type { Client } from '../client/interfaces/Client';
 import { writeFile } from './fileSystem';
@@ -23,12 +23,21 @@ export async function writeClientIndex(
     client: Client,
     templates: Templates,
     outputPath: string,
+    corePath: string,
+    modelsPath: string,
+    schemasPath: string,
+    servicesPath: string,
     useUnionTypes: boolean,
     exportCore: boolean,
     exportServices: boolean,
     exportModels: boolean,
     exportSchemas: boolean
 ): Promise<void> {
+    const modelsRelativePath = relative(outputPath, modelsPath);
+    const schemasRelativePath = relative(outputPath, schemasPath);
+    const servicesRelativePath = relative(outputPath, servicesPath);
+    const coreRelativePath = relative(outputPath, corePath);
+
     await writeFile(
         resolve(outputPath, 'index.ts'),
         templates.index({
@@ -41,6 +50,10 @@ export async function writeClientIndex(
             version: client.version,
             models: sortModelsByName(client.models),
             services: sortServicesByName(client.services),
+            modelsPath: modelsRelativePath.startsWith('../') ? modelsRelativePath : `./${modelsRelativePath}`,
+            schemasPath: schemasRelativePath.startsWith('../') ? schemasRelativePath : `./${schemasRelativePath}`,
+            servicesPath: servicesRelativePath.startsWith('../') ? servicesRelativePath : `./${servicesRelativePath}`,
+            corePath: coreRelativePath.startsWith('../') ? coreRelativePath : `./${coreRelativePath}`,
         })
     );
 }

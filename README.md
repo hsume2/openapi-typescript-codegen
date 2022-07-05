@@ -41,6 +41,10 @@ $ openapi --help
     -i, --input <value>       OpenAPI specification, can be a path, url or string content (required)
     -o, --output <value>      Output directory (required)
     -c, --client <value>      HTTP client to generate [fetch, xhr, node] (default: "fetch")
+    --outputCore <value>      The relative location of the core output directory
+    --outputModels <value>    The relative location of the models output directory
+    --outputSchemas <value>   The relative location of the schemas output directory
+    --outputServices <value>  The relative location of the services output directory
     --useOptions              Use options instead of arguments
     --useUnionTypes           Use union types instead of enums
     --exportCore <value>      Write core files to disk (default: true)
